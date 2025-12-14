@@ -10,7 +10,6 @@ public class Player : MonoBehaviour
     [SerializeField] private LineRenderer ropeLine;
 
     private Letter caughtLetter;
-    //public float ropeSpeed;
     public float hookSpeed;
     public float rotationSpeed = 10f;
 
@@ -20,22 +19,6 @@ public class Player : MonoBehaviour
 
     private Vector3 hookStartLocalPos;
     private Vector3 shootDirection;
-
-
-    private void ActivateHook()
-    {
-        if (isReturning == false && isRotating == true)
-        {
-            isRotating = false;
-            isShooting = true;
-            ShootHook();
-        }
-    }
-
-    private void ShootHook()
-    {
-        shootDirection = -hookTransform.up;
-    }
 
     void Start()
     {
@@ -58,6 +41,7 @@ public class Player : MonoBehaviour
         if (isRotating == true && hookTransform != null)
         {
             hookTransform.Rotate(0f, 0f, -rotationSpeed * Time.deltaTime);
+            
         }
 
         //HOOK EXIT
@@ -65,6 +49,7 @@ public class Player : MonoBehaviour
         {
             hookTransform.position += shootDirection * hookSpeed * Time.deltaTime;
 
+            //CHANGE BOOLIANS IF DIDNT CATCH A LETTER & CROSSED MaxHookDistance
             float dist = Vector3.Distance(hookTransform.position, transform.position);
             if (dist >= maxHookDistance && caughtLetter == null)
             {
@@ -77,11 +62,9 @@ public class Player : MonoBehaviour
         //RETURN
         if (isReturning == true && hookTransform != null)
         {
-            Vector3 targetPos = transform.TransformPoint(hookStartLocalPos);
+            hookTransform.localPosition = Vector3.MoveTowards(hookTransform.localPosition, hookStartLocalPos, hookSpeed * Time.deltaTime);
 
-            hookTransform.position = Vector3.MoveTowards(hookTransform.position, targetPos, hookSpeed * Time.deltaTime);
-
-            if (hookTransform.position == targetPos)
+            if (hookTransform.position == hookStartLocalPos)
             {
                 hookTransform.localPosition = hookStartLocalPos;
                 isReturning = false;
@@ -89,7 +72,7 @@ public class Player : MonoBehaviour
 
                 if (caughtLetter != null)
                 {
-                    Destroy(caughtLetter.gameObject);
+                    caughtLetter.Collect();
                     caughtLetter = null;
                 }
             }
@@ -102,14 +85,39 @@ public class Player : MonoBehaviour
 
         }
     }
+
+    private void ActivateHook()
+    {
+        if (isReturning == false && isRotating == true)
+        {
+            isRotating = false;
+            isShooting = true;
+            ShootHook();
+        }
+    }
+
+    private void ShootHook()
+    {
+        shootDirection = -hookTransform.up;
+    }
+
+
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!isShooting) return;
+        if (!isShooting) 
+        {
+            return;
+        };
 
         Letter letter = other.GetComponent<Letter>();
-        if (letter == null) return;
+        {
+            if (letter == null) return;
+        }
 
-        if (!letter.isMainLetter) return;
+        if (!letter.isMainLetter)
+        {
+            return;
+        }
 
         if (caughtLetter == null)
         {

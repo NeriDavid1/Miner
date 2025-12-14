@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,20 +11,16 @@ public class Letter : MonoBehaviour
 
     public bool isMainLetter;
 
+    public static event Action<Letter> OnCollected;
+
+
     private void Awake()
     {
-       // Collider2D c = gameObject.GetComponent<PolygonCollider2D>();
-        //c.enabled = false;
-        //c.enabled = true;
 
     }
     void Start()
     {
 
-        //if (data != null && spriteRenderer != null)
-        //{
-        //    spriteRenderer.sprite = data.sprite;
-        //}
     }
 
     void Update()
@@ -41,5 +38,11 @@ public class Letter : MonoBehaviour
 
             gameObject.AddComponent<PolygonCollider2D>();
         }
+    }
+
+    public void Collect()
+    {
+        OnCollected?.Invoke(this);
+        Destroy(gameObject);
     }
 }

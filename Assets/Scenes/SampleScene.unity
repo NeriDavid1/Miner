@@ -307,13 +307,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentLevel: {fileID: 0}
   LetterPrefab: {fileID: 3317658814731925972, guid: de646b218908e7648a537d0765c8aa7b, type: 3}
-  playerPrefab: {fileID: 4891149265574122692, guid: 0d7262f902532354a92e64d922e8640c, type: 3}
   lettersDataBase: {fileID: 11400000, guid: b765e6a65da6bad4cbf322a4c00150ee, type: 2}
   innerSpawnRadius: 2
   mainCamera: {fileID: 519420031}
   minLetterDistance: 3
   playerStartPoint: {fileID: 1829853354}
-  lettersPlaceHolder: {fileID: 1366600739}
+  lettersPlaceHolder: {fileID: 1829853354}
 --- !u!4 &1686363043
 Transform:
   m_ObjectHideFlags: 0

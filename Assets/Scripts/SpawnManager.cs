@@ -7,8 +7,9 @@ public class SpawnManager : MonoBehaviour
 {
     [SerializeField] private LevelDataSO currentLevel;
     [SerializeField] private GameObject LetterPrefab;
-    [SerializeField] private GameObject playerPrefab;
+  //  [SerializeField] private GameObject playerPrefab;
     [SerializeField] private LettersDataBase lettersDataBase;
+
 
     //SPAWN POINTS
     [SerializeField] private float innerSpawnRadius = 2f;
@@ -16,7 +17,8 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private Camera mainCamera;
     [SerializeField] private float minLetterDistance = 1f;
     [SerializeField] private Transform playerStartPoint;
-    [SerializeField] private Transform lettersPlaceHolder;
+   // [SerializeField] private Transform lettersPlaceHolder;
+
 
 
     public static SpawnManager instance;
@@ -50,14 +52,14 @@ public class SpawnManager : MonoBehaviour
 
     private void SpawnPlayer()
     {
-        if (playerStartPoint == null || playerPrefab == null)
+        if (playerStartPoint == null || currentLevel.playerPrefab == null)
         {
             Debug.Log("PlayerStartPoint or PlayerPrefab are empty");
             return;
         } 
         else
         {
-            Instantiate(playerPrefab, playerStartPoint.position, Quaternion.identity);
+            Instantiate(currentLevel.playerPrefab, playerStartPoint.position, Quaternion.identity);
 
         }
     }
@@ -100,6 +102,7 @@ public class SpawnManager : MonoBehaviour
                 trySpawn++;
             }
             Debug.Log($"spawn at {trySpawn}");
+
             //SPAWN IF FOUND A SPOT
             if (availableSpot == true)
             {
@@ -109,9 +112,9 @@ public class SpawnManager : MonoBehaviour
 
                 if (spriteToUse != null)
                 {
-                    GameObject newLetterObj = Instantiate(LetterPrefab, pos, Quaternion.identity, lettersPlaceHolder);
+                    GameObject newLetterObj = Instantiate(LetterPrefab, pos, Quaternion.identity);
 
-                    //RESET LETTER
+                    //INIT LETTER + MARK IF MAIN
                     Letter letterScript = newLetterObj.GetComponent<Letter>();
                     if (letterScript != null)
                     {
@@ -119,7 +122,6 @@ public class SpawnManager : MonoBehaviour
                         letterScript.Init(chosenData, spriteToUse, isMain);
                     }
                 }
-                float dist = Vector3.Distance(pos, playerStartPoint.position);
             }
         }
     }
