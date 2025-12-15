@@ -109,16 +109,19 @@ public class Player : MonoBehaviour
             return;
         };
 
+
         Letter letter = other.GetComponent<Letter>();
         {
             if (letter == null) return;
         }
+        
 
-        if (!letter.isMainLetter)
-        {
-            return;
-        }
-
+        //if (!letter.isMainLetter)
+        //{
+        //    return;
+        //}
+        bool isMainLetter = GameManager.instance.TryGetLetter(letter.letterID);
+        GameObject letterObj = other.gameObject;
         if (caughtLetter == null)
         {
             caughtLetter = letter;

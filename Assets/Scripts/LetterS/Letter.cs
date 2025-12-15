@@ -10,6 +10,7 @@ public class Letter : MonoBehaviour
     public SpriteRenderer spriteRenderer;
 
     public bool isMainLetter;
+    public string letterID;
 
     public static event Action<Letter> OnCollected;
 

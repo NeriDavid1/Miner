@@ -7,17 +7,14 @@ public class SpawnManager : MonoBehaviour
 {
     [SerializeField] private LevelDataSO currentLevel;
     [SerializeField] private GameObject LetterPrefab;
-  //  [SerializeField] private GameObject playerPrefab;
     [SerializeField] private LettersDataBase lettersDataBase;
 
 
     //SPAWN POINTS
     [SerializeField] private float innerSpawnRadius = 2f;
-   // [SerializeField] private float OutterSpawnRadius = 6f;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private float minLetterDistance = 1f;
     [SerializeField] private Transform playerStartPoint;
-   // [SerializeField] private Transform lettersPlaceHolder;
 
 
 

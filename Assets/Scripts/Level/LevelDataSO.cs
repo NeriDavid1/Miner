@@ -8,7 +8,8 @@ public class LevelDataSO : ScriptableObject
     public string levelName;
 
     public Sprite background;          
-    public string mainLetter;      
+    public string mainLetter;
+    public int mainLetterCount;
     public List<LetterDataSO> lettersPool;
     public GameObject playerPrefab;
     public GameObject backgroundPrefab;
