@@ -8,12 +8,20 @@ public class GameManager : MonoBehaviour
     public LevelDataBase LevelDataBase;
     public LevelDataSO level;
     public int letterCounter;
-
     public int currentLevel;
     
 
     public static GameManager instance;
 
+    private void OnEnable()
+    {
+        Player.OnMainLetterDelivered += MainLetterDelivered;
+    }
+
+    private void OnDisable()
+    {
+        Player.OnMainLetterDelivered -= MainLetterDelivered;
+    }
     private void Awake()
     {
         if (instance != null && instance != this) 
@@ -26,7 +34,9 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        letterCounter = 0;
         StartGame();
+        
     }
 
 
@@ -34,6 +44,8 @@ public class GameManager : MonoBehaviour
     {
 
         level = LevelDataBase.GetLevel(currentLevel);
+        letterCounter = 0;
+
         SpawnManager.instance.CreateLevel(level);
         Instantiate(level.backgroundPrefab);
 
@@ -51,23 +63,44 @@ public class GameManager : MonoBehaviour
 
     public bool TryGetLetter(string letterID)
     {
-        if (letterID == level.mainLetter)
+        if (level == null)
         {
-            if (letterCounter < level.mainLetterCount)
-            {
-                letterCounter++;
-                if (letterCounter == level.mainLetterCount) 
-                {
-                    Debug.Log("STAGE DONE");
-                    //INDITACTION FOR STAGE COMPLETE
-                    currentLevel++;
-                }
-                return true;
-            } 
-
+            return false;
         }
-        return false;
+        if (letterID != level.mainLetter)
+        {
+            return false;
+        }
+
+        return letterCounter < level.mainLetterCount;
     }
+
+    private void MainLetterDelivered(string letterID)
+    {
+        if (level == null)
+        {
+            return;
+        }
+
+        if (letterID != level.mainLetter)
+        {
+            return;
+        }
+
+        if (letterCounter >= level.mainLetterCount)
+        {
+            return;
+        }
+
+        letterCounter++;
+
+        if (letterCounter >= level.mainLetterCount)
+        {
+            Debug.Log("STAGE DONE");
+            StartNextLevel();
+        }
+    }
+
 }
 
 

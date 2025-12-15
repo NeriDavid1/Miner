@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,7 +10,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float maxHookDistance = 5f;
     [SerializeField] private LineRenderer ropeLine;
 
-    private Letter caughtLetter;
+   // private Letter caughtLetter;
     public float hookSpeed;
     public float rotationSpeed = 10f;
 
@@ -19,6 +20,11 @@ public class Player : MonoBehaviour
 
     private Vector3 hookStartLocalPos;
     private Vector3 shootDirection;
+
+    public static event Action<string> OnMainLetterDelivered;
+    private string carriedMainLetterId = null;
+
+    private Transform carriedLetterTransform = null;
 
     void Start()
     {
@@ -51,7 +57,7 @@ public class Player : MonoBehaviour
 
             //CHANGE BOOLIANS IF DIDNT CATCH A LETTER & CROSSED MaxHookDistance
             float dist = Vector3.Distance(hookTransform.position, transform.position);
-            if (dist >= maxHookDistance && caughtLetter == null)
+            if (dist >= maxHookDistance)
             {
                 isShooting = false;
                 isReturning = true;
@@ -64,17 +70,34 @@ public class Player : MonoBehaviour
         {
             hookTransform.localPosition = Vector3.MoveTowards(hookTransform.localPosition, hookStartLocalPos, hookSpeed * Time.deltaTime);
 
-            if (hookTransform.position == hookStartLocalPos)
+            if (hookTransform.localPosition == hookStartLocalPos)
             {
                 hookTransform.localPosition = hookStartLocalPos;
                 isReturning = false;
                 isRotating = true;
 
-                if (caughtLetter != null)
+                if (carriedMainLetterId != null)
                 {
-                    caughtLetter.Collect();
-                    caughtLetter = null;
+                    OnMainLetterDelivered?.Invoke(carriedMainLetterId);
+                    carriedMainLetterId = null;
+
+                    if (carriedLetterTransform != null)
+                    {
+                        Destroy(carriedLetterTransform.gameObject);
+                        carriedLetterTransform = null;
+                    }
+
+                    //foreach (Transform child in hookTransform)
+                    //{
+                    //    Destroy(child.gameObject);
+                    //}
                 }
+
+                //foreach (Transform child in hookTransform)
+                //{
+                //    Destroy(child.gameObject);
+                //}
+
             }
         }
         // ROPE BY LINE RENDERER
@@ -101,6 +124,13 @@ public class Player : MonoBehaviour
         shootDirection = -hookTransform.up;
     }
 
+    private void ReturnHook()
+    {
+        isShooting = false;
+        isReturning = true;
+    }
+
+
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -109,27 +139,28 @@ public class Player : MonoBehaviour
             return;
         };
 
-
         Letter letter = other.GetComponent<Letter>();
-        {
-            if (letter == null) return;
-        }
-        
 
-        //if (!letter.isMainLetter)
-        //{
-        //    return;
-        //}
-        bool isMainLetter = GameManager.instance.TryGetLetter(letter.letterID);
-        GameObject letterObj = other.gameObject;
-        if (caughtLetter == null)
+        if (letter == null)
         {
-            caughtLetter = letter;
-            caughtLetter.transform.SetParent(hookTransform);
-
-            isShooting = false;
-            isReturning = true;
+            return;
         }
+
+        bool shouldCollectAsMain = GameManager.instance.TryGetLetter(letter.letterID);
+
+        if (shouldCollectAsMain == true)
+        {
+            letter.transform.SetParent(hookTransform);
+
+            carriedLetterTransform = letter.transform;
+            carriedMainLetterId = letter.letterID;
+        }
+        else
+        {
+            Debug.Log("Wrong Letter Hit");
+        }
+
+        ReturnHook();
     }
 
 

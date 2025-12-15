@@ -8,6 +8,7 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private LevelDataSO currentLevel;
     [SerializeField] private GameObject LetterPrefab;
     [SerializeField] private LettersDataBase lettersDataBase;
+    [SerializeField] private Transform levelRoot;
 
 
     //SPAWN POINTS
@@ -16,7 +17,7 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private float minLetterDistance = 1f;
     [SerializeField] private Transform playerStartPoint;
 
-
+    private GameObject spawnedPlayer;
 
     public static SpawnManager instance;
 
@@ -42,8 +43,10 @@ public class SpawnManager : MonoBehaviour
         }
 
         currentLevel = level;
+        ClearLetters();
         SpawnPlayer();
         SpawnLetters();
+        
 
     }
 
@@ -54,73 +57,123 @@ public class SpawnManager : MonoBehaviour
             Debug.Log("PlayerStartPoint or PlayerPrefab are empty");
             return;
         } 
-        else
-        {
-            Instantiate(currentLevel.playerPrefab, playerStartPoint.position, Quaternion.identity);
 
+        if (spawnedPlayer != null)
+        {
+            spawnedPlayer.transform.position = playerStartPoint.position;
+            return;
+        }
+        spawnedPlayer = Instantiate(currentLevel.playerPrefab, playerStartPoint.position, Quaternion.identity);
+
+    }
+
+    private void SpawnOneLetter(LetterDataSO chosenData)
+    {
+        if (chosenData == null)
+        {
+            return;
+        }
+
+        Vector3 pos = Vector3.zero;
+        bool availableSpot = false;
+
+        int trySpawn = 0;
+        int maxTries = 50;
+
+        while (trySpawn < maxTries && availableSpot == false)
+        {
+            pos = GetRandomPointInCameraBounds();
+            if (IsFarEnough(pos))
+            {
+                availableSpot = true;
+            }
+            trySpawn++;
+        }
+
+        if (availableSpot == false)
+        {
+            return;
+        }
+
+        Sprite spriteToUse = lettersDataBase.GetSpriteByName(chosenData.id);
+
+        if (spriteToUse == null)
+        {
+            return;
+        }
+
+        GameObject newLetterObj = Instantiate(LetterPrefab, pos, Quaternion.identity);
+        newLetterObj.transform.SetParent(levelRoot);
+
+        Letter letterScript = newLetterObj.GetComponent<Letter>();
+        if (letterScript != null)
+        {
+            letterScript.Init(chosenData, spriteToUse, false);
         }
     }
 
 
     private void SpawnLetters()
     {
+        // TotalLettersToSpawn - MainLetterCount = regularCount
+        int total = currentLevel.totalLettersToSpawn;
+        int mainCount = currentLevel.mainLetterCount;
+        int regularCount = total - mainCount;
 
-        if (LetterPrefab == null || playerStartPoint == null || currentLevel == null)
+        //Spawn mains and regulars
+        SpawnMainLetters(mainCount);
+        SpawnRegularLetters(regularCount);
+    }
+
+    private void SpawnMainLetters(int count)
+    {
+        if (count <= 0)
         {
-            Debug.Log("LetterPrefab or playerStartPoint was not found");
             return;
         }
 
-        if (currentLevel.lettersPool == null)
+        LetterDataSO mainData = GetMainLetterData();
+
+        if (mainData == null)
         {
-            Debug.Log("Level has no lettersPool");
+            return;
+        }
+        for (int i = 0; i < count; i++)
+        {
+            SpawnOneLetter(mainData);
+        }
+    }
+
+    private void SpawnRegularLetters(int count)
+    {
+        if (count <= 0)
+        {
+            return;
+        }
+        List<LetterDataSO> nonMainPool = new List<LetterDataSO>();
+
+        for (int i = 0; i < currentLevel.lettersPool.Count; i++)
+        {
+            LetterDataSO letterData = currentLevel.lettersPool[i];
+
+            if (letterData != null && letterData.id != currentLevel.mainLetter)
+            {
+                nonMainPool.Add(letterData);
+            }
+        }
+
+        if (nonMainPool.Count == 0)
+        {
             return;
         }
 
-        int lettersToSpawn = currentLevel.totalLettersToSpawn;
-
-        for (int i = 0; i < lettersToSpawn; i++)
+        for (int i = 0; i < count; i++)
         {
-            Vector3 pos = Vector3.zero;
-            bool availableSpot = false;
-
-            int trySpawn = 0;
-            int maxTries = 50;
-
-
-            while (trySpawn < maxTries && availableSpot == false)
-            {
-                pos = GetRandomPointInCameraBounds();
-                // CHECKS IF SPAWN POINT IS FAR ENOUGH FROM USED POSITIONS
-                if (IsFarEnough(pos))
-                {
-                    availableSpot = true;
-                }
-                trySpawn++;
-            }
-            Debug.Log($"spawn at {trySpawn}");
-
-            //SPAWN IF FOUND A SPOT
-            if (availableSpot == true)
-            {
-                int poolIndex = Random.Range(0, currentLevel.lettersPool.Count);
-                LetterDataSO chosenData = currentLevel.lettersPool[poolIndex];
-                Sprite spriteToUse = lettersDataBase.GetSpriteByName(chosenData.id);
-
-                if (spriteToUse != null)
-                {
-                    GameObject newLetterObj = Instantiate(LetterPrefab, pos, Quaternion.identity);
-
-                    //INIT LETTER + MARK IF MAIN
-                    Letter letterScript = newLetterObj.GetComponent<Letter>();
-                    if (letterScript != null)
-                    {
-                        bool isMain = chosenData.id == currentLevel.mainLetter;
-                        letterScript.Init(chosenData, spriteToUse, isMain);
-                    }
-                }
-            }
+            int index = Random.Range(0, nonMainPool.Count);
+            SpawnOneLetter(nonMainPool[index]);
         }
+
+
     }
 
     private bool IsFarEnough(Vector3 letter)
@@ -167,6 +220,37 @@ public class SpawnManager : MonoBehaviour
 
         return new Vector3(x, y, 0f);
     }
+
+    private LetterDataSO GetMainLetterData()
+    {
+        if (currentLevel == null || currentLevel.lettersPool == null)
+        {
+            return null;
+        }
+
+        foreach (var data in currentLevel.lettersPool)
+        {
+            if (data != null && data.id == currentLevel.mainLetter)
+            {
+                return data;
+            }
+        }
+        return null;
+    }
+
+    private void ClearLetters()
+    {
+        if (levelRoot == null)
+        {
+            return;
+        }
+
+        for (int i = levelRoot.childCount - 1; i >= 0; i--)
+        {
+            Destroy(levelRoot.GetChild(i).gameObject);
+        }
+    }
+
 
 
     //GIZMOZ
