@@ -33,6 +33,7 @@ public class Letter : MonoBehaviour
     {
         this.data = data;
         this.isMainLetter = isMainLetter;
+        this.letterID = data.id;
         if (spriteRenderer != null)
         {
             spriteRenderer.sprite = sprite;
