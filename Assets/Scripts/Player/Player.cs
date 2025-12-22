@@ -6,37 +6,61 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField] private Transform catchAnchor;
-    [SerializeField] private Transform hookTransform;
+    [SerializeField] private Transform rotateTransform;
+    [SerializeField] private Transform ropeStretchBone;
     [SerializeField] private float maxHookDistance = 5f;
-    [SerializeField] private LineRenderer ropeLine;
 
-   // private Letter caughtLetter;
+    //ROPE
+    private Vector3 ropeRestLocalPos;
+    private float currentRopeLength;
     public float hookSpeed;
     public float rotationSpeed = 10f;
-
     private bool isRotating = true;
     private bool isShooting = false;
     private bool isReturning = false;
-
-    private Vector3 hookStartLocalPos;
-    private Vector3 shootDirection;
+    //private Vector3 hookStartLocalPos;
+    //private Vector3 shootDirection;
 
     public static event Action<string> OnMainLetterDelivered;
     private string carriedMainLetterId = null;
 
     private Transform carriedLetterTransform = null;
 
+    [SerializeField] private Animator animator;
+
+
 
 
     void Start()
     {
         // RECORD START POSITION
-        if (hookTransform != null)
+        //if (hookTransform != null)
+        //{
+        //    hookStartLocalPos = hookTransform.localPosition;
+        //}
+
+        // RECORD ROPE POSITION
+        if (ropeStretchBone != null)
         {
-            hookStartLocalPos = hookTransform.localPosition;
+            ropeRestLocalPos = ropeStretchBone.localPosition;
+            currentRopeLength = 0f;
         }
 
+
     }
+
+    private void UpdateAnimator()
+    {
+        if (animator == null)
+        {
+            return;
+        }
+
+        animator.SetBool("isRotating", isRotating);
+        animator.SetBool("isShooting", isShooting);
+        animator.SetBool("isReturning", isReturning);
+    }
+
 
     void Update()
     {
@@ -46,37 +70,29 @@ public class Player : MonoBehaviour
         }
 
         //ROTATION
-        if (isRotating == true && hookTransform != null)
+        if (isRotating == true && rotateTransform != null)
         {
-            hookTransform.Rotate(0f, 0f, -rotationSpeed * Time.deltaTime); 
+            rotateTransform.Rotate(0f, 0f, -rotationSpeed * Time.deltaTime); 
         }
 
         HookExit();
         HookReturn();
+        UpdateAnimator();
 
-        // ROPE BY LINE RENDERER
-        if (ropeLine != null)
-        {
-            ropeLine.SetPosition(0, transform.position);
-            ropeLine.SetPosition(1, hookTransform.position);
-
-        }
     }
 
-    private void ActivateHook()
-    {
-        if (isReturning == false && isRotating == true)
-        {
-            isRotating = false;
-            isShooting = true;
-            ShootHook();
-        }
-    }
 
-    private void ShootHook()
-    {
-        shootDirection = -hookTransform.up;
-    }
+     private void ActivateHook()
+     {
+    
+         if (isReturning == false && isRotating == true)
+         {
+           isRotating = false;
+           isShooting = true;
+         }
+     }
+
+
 
     private void ReturnHook()
     {
@@ -84,50 +100,68 @@ public class Player : MonoBehaviour
         isReturning = true;
     }
 
+    private void ApplyRopeLength()
+    {
+        if (ropeStretchBone == null)
+        {
+            return;
+        }
+
+        ropeStretchBone.localPosition = ropeRestLocalPos + Vector3.right * currentRopeLength;
+    }
+
     private void HookExit()
     {
-        if (isShooting == true && hookTransform != null)
+        if (!isShooting || ropeStretchBone == null)
         {
-            hookTransform.position += shootDirection * hookSpeed * Time.deltaTime;
-
-            //CHANGE BOOLIANS IF DIDNT CATCH A LETTER & CROSSED MaxHookDistance
-            float dist = Vector3.Distance(hookTransform.position, transform.position);
-            if (dist >= maxHookDistance)
-            {
-                isShooting = false;
-                isReturning = true;
-            }
+            return;
         }
+
+        currentRopeLength += hookSpeed * Time.deltaTime;
+
+        //CHANGE BOOLIANS IF DIDNT CATCH A LETTER & CROSSED MaxHookDistance
+        if (currentRopeLength >= maxHookDistance)
+        {
+            currentRopeLength = maxHookDistance;
+            ReturnHook();
+        }
+
+        ApplyRopeLength();
     }
+
 
     private void HookReturn()
     {
-        if (isReturning == true && hookTransform != null)
+        if (!isReturning || ropeStretchBone == null)
         {
-            hookTransform.localPosition = Vector3.MoveTowards(hookTransform.localPosition, hookStartLocalPos, hookSpeed * Time.deltaTime);
+            return;
+        }
 
-            if (hookTransform.localPosition == hookStartLocalPos)
+        currentRopeLength -= hookSpeed * Time.deltaTime;
+
+        if (currentRopeLength <= 0f)
+        {
+            currentRopeLength = 0f;
+            isReturning = false;
+            isRotating = true;
+
+            //TO GAME MANAGER -  *AFTER* RETURNED
+            if (carriedMainLetterId != null)
             {
-                hookTransform.localPosition = hookStartLocalPos;
-                isReturning = false;
-                isRotating = true;
+                OnMainLetterDelivered?.Invoke(carriedMainLetterId);
+                carriedMainLetterId = null;
 
-                if (carriedMainLetterId != null)
+                if (carriedLetterTransform != null)
                 {
-                    //TO GAME MANAGER -  *AFTER* RETURNED
-                    OnMainLetterDelivered?.Invoke(carriedMainLetterId);
-                    carriedMainLetterId = null;
-
-                    if (carriedLetterTransform != null)
-                    {
-                        Destroy(carriedLetterTransform.gameObject);
-                        carriedLetterTransform = null;
-                    }
-
+                    Destroy(carriedLetterTransform.gameObject);
+                    carriedLetterTransform = null;
                 }
             }
         }
+
+        ApplyRopeLength();
     }
+
 
     private void OnTriggerEnter2D(Collider2D other)
     {
