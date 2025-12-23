@@ -1,15 +1,16 @@
 using System.Collections.Generic;
+using UnityEditor.EditorTools;
 using UnityEngine;
 
 public class VfxPoolManager : MonoBehaviour
 {
     public static VfxPoolManager Instance { get; private set; }
 
-    [SerializeField] private ParticleSystem particlePrefab;
+    [SerializeField] private GameObject particlePrefab;
     [SerializeField] private int initialSize = 4;
     [SerializeField] private Transform poolRoot;
 
-    private Queue<PooledParticle> availableParticles = new Queue<PooledParticle>();
+    private Queue<GameObject> availableParticles = new Queue<GameObject>();
 
     private void Awake()
     {
@@ -34,28 +35,22 @@ public class VfxPoolManager : MonoBehaviour
 
         for (int i = 0; i < initialSize; i++)
         {
-            PooledParticle newParticle = CreateNew();
+            GameObject newParticle = CreateNew();
             Release(newParticle);
         }
     }
 
-    private PooledParticle CreateNew()
+    private GameObject CreateNew()
     {
-        ParticleSystem particleSystemInstance = Instantiate(particlePrefab, poolRoot);
-        GameObject particleGameObject = particleSystemInstance.gameObject;
+        GameObject particleGameObject = Instantiate(particlePrefab, poolRoot);
         particleGameObject.SetActive(false);
 
-        PooledParticle pooledParticle = particleGameObject.GetComponent<PooledParticle>();
-        if (pooledParticle == null)
-        {
-            pooledParticle = particleGameObject.AddComponent<PooledParticle>();
-        }
-
-        pooledParticle.Bind(this);
-        return pooledParticle;
+        return particleGameObject;
     }
 
-    public PooledParticle GetParticle()
+
+
+    public GameObject GetParticle()
     {
         if (availableParticles.Count > 0)
         {
@@ -70,7 +65,7 @@ public class VfxPoolManager : MonoBehaviour
         return CreateNew();
     }
 
-    public void Release(PooledParticle pooledParticle)
+    public void Release(GameObject pooledParticle)
     {
         if (pooledParticle == null)
         {

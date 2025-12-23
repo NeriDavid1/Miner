@@ -123,9 +123,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1049173340233033787}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0.9999989, w: -0.0014740671}
-  m_LocalPosition: {x: 96.15245, y: -0.3417283, z: 0}
-  m_LocalScale: {x: 2.4, y: 1.2, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0.9999989, w: -0.0014740662}
+  m_LocalPosition: {x: 74.15285, y: -0.16686974, z: -0.3083141}
+  m_LocalScale: {x: 1.6151042, y: 0.89728016, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1278613028086809048}
@@ -1005,7 +1005,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6953486333863454421}
   m_Layer: 0
-  m_Name: bone_2
+  m_Name: MovingBone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1053,8 +1053,8 @@ Transform:
   m_GameObject: {fileID: 5644451252253500417}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 10.5, y: -0.009999992, z: 0.3083141}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalPosition: {x: 9, y: -0.009999992, z: 0.3083141}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8777396373439199614}
@@ -1237,7 +1237,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.035, y: 0.035, z: 0.035}
+  m_LocalScale: {x: 0.04, y: 0.04, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4390470415936684052}
@@ -1261,7 +1261,7 @@ MonoBehaviour:
   ropeStretchBone: {fileID: 6953486333863454421}
   maxHookDistance: 600
   hookSpeed: 500
-  rotationSpeed: 100
+  rotationSpeed: 75
   animator: {fileID: 6953826110413882717}
 --- !u!50 &9078709031020182830
 Rigidbody2D:
@@ -1448,8 +1448,8 @@ Transform:
   m_GameObject: {fileID: 8892070675665862997}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -6.8, y: -0.009999992, z: 0.3083141}
-  m_LocalScale: {x: 0.5, y: 1, z: 1}
+  m_LocalPosition: {x: -6.3, y: 0, z: 0.3083141}
+  m_LocalScale: {x: 0.5, y: 0.9, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2390812444114224461}
@@ -1495,7 +1495,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_Sprite: {fileID: 812508122, guid: 29ab32bd686ced84d8a5ab486a05b897, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

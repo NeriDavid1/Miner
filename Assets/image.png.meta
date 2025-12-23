@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 7245f3314a889a04f8195f9b0f08b6c2
+guid: 61e6ea2bb07bbe545ae2cd91281c0a24
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -43,7 +43,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -121,49 +121,7 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites:
-    - serializedVersion: 2
-      name: Grabber2 1_0
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 0
-        width: 5154
-        height: 6476
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 868c320685c150d438c30f8011ffcdce
-      internalID: 254979750
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Grabber2 1_1
-      rect:
-        serializedVersion: 2
-        x: 5154
-        y: 0
-        width: 5154
-        height: 6476
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 5e88883847755ff4fbc8243f02aad50d
-      internalID: -2113299530
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+    sprites: []
     outline: []
     physicsShape: []
     bones: []
@@ -174,9 +132,7 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable:
-      Grabber2 1_0: 254979750
-      Grabber2 1_1: -2113299530
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

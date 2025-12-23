@@ -1,13 +1,20 @@
+using System.Collections;
+using UnityEditor.EditorTools;
 using UnityEngine;
+using static UnityEngine.ParticleSystem;
 
 public class WrongLetterVfxSpawner : MonoBehaviour
 {
     private PlayerVfxPoints cachedPoints;
 
-    private void OnEnable()
+    private void Start()
     {
         Player.OnWrongLetterHit += HandleWrongLetterHit;
     }
+    //private void OnEnable()
+    //{
+    //    Player.OnWrongLetterHit += HandleWrongLetterHit;
+    //}
 
     private void OnDisable()
     {
@@ -47,12 +54,29 @@ public class WrongLetterVfxSpawner : MonoBehaviour
             return;
         }
 
-        PooledParticle pooledParticle = VfxPoolManager.Instance.GetParticle();
+        GameObject pooledParticle = VfxPoolManager.Instance.GetParticle();
         if (pooledParticle == null)
         {
             return;
         }
 
-        pooledParticle.PlayAtPosition(spawnPoint.position);
+      //pooledParticle.transform.localPosition = spawnPoint.transform.position;
+        pooledParticle.transform.position = spawnPoint.position;
+        pooledParticle.SetActive(true);
+        StartCoroutine(ActivateParticle(pooledParticle));
+    }
+
+    IEnumerator ActivateParticle(GameObject particle)
+    {
+        //particle.SetActive(true);
+        float time = 0;
+        if (particle.TryGetComponent<ParticleSystem>(out var ps))
+        {
+            var curv = ps.main.startLifetime;
+            time = curv.constantMax;
+        }
+        yield return new WaitForSeconds(time);
+        particle.SetActive(false);
+        VfxPoolManager.Instance.Release(particle);
     }
 }
