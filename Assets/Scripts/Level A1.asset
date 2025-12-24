@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelName: A1
   background: {fileID: 10911, guid: 0000000000000000f000000000000000, type: 0}
-  mainLetter: A
-  mainLetterCount: 2
+  mainLetter: CAB
+  mainLetterCount: 0
   lettersPool:
   - {fileID: 11400000, guid: eab9fc2319328bf498aeefcb48e752ae, type: 2}
   - {fileID: 11400000, guid: b6b52be3c34cdbe4181b01a308e63216, type: 2}
@@ -25,4 +25,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 16dca74dcfd115641bcb4edd6b37d442, type: 2}
   playerPrefab: {fileID: 7472869151234094916, guid: 9ae87636c9a5d404a8c22b0e9ef9ba6c, type: 3}
   backgroundPrefab: {fileID: 2922969682941220674, guid: 02a0cc4edb176f24db8f689c71f52fb8, type: 3}
+  targetWord: CAB
   totalLettersToSpawn: 9

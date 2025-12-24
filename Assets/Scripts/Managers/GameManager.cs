@@ -10,8 +10,11 @@ public class GameManager : MonoBehaviour
     public LevelDataSO level;
     public int letterCounter;
     public int currentLevel;
+    public string ExpectedLetter;
+    private int wordIndex;
 
     public static event Action<LevelDataSO> OnLevelStarted;
+    public static event Action<string> OnExpectedLetterChanged;
 
     public static GameManager instance;
 
@@ -36,7 +39,8 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        letterCounter = 0;
+        //letterCounter = 0;
+        
         StartGame();
         
     }
@@ -47,6 +51,7 @@ public class GameManager : MonoBehaviour
 
         level = LevelDataBase.GetLevel(currentLevel);
         letterCounter = 0;
+        wordIndex = 0;
 
         OnLevelStarted?.Invoke(level);
 
@@ -63,6 +68,18 @@ public class GameManager : MonoBehaviour
             return;
         }
         StartGame();
+    }
+
+    private bool IsWordMode()
+    {
+        if (level == null)
+        {
+            return false;
+        }
+        if (string.IsNullOrWhiteSpace(level.targetWord))
+        {
+            return false;
+        }
     }
 
     public bool TryGetLetter(string letterID)

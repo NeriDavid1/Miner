@@ -13,6 +13,7 @@ public class LevelDataSO : ScriptableObject
     public List<LetterDataSO> lettersPool;
     public GameObject playerPrefab;
     public GameObject backgroundPrefab;
+    public string targetWord;
 
     //SPAWNS
     public int totalLettersToSpawn = 5;
