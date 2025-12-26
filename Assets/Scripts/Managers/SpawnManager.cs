@@ -121,6 +121,21 @@ public class SpawnManager : MonoBehaviour
     {
         // TotalLettersToSpawn - MainLetterCount = regularCount
         int total = currentLevel.totalLettersToSpawn;
+
+        //ENTER WORD MODE
+        if (currentLevel.targetWord != null && currentLevel.targetWord != "")
+        {
+            SpawnWordLetters();
+
+            int remaining = total - currentLevel.targetWord.Length;
+            if (remaining > 0)
+            {
+                SpawnRegularLetters(remaining);
+            }
+            return;
+        }
+
+        //SINGLE LETTER MODE
         int mainCount = currentLevel.mainLetterCount;
         int regularCount = total - mainCount;
 
@@ -178,6 +193,21 @@ public class SpawnManager : MonoBehaviour
         }
 
 
+    }
+
+    private void SpawnWordLetters(/*int total*/)
+    {
+        //MAKE SURE SPAWN CONTAINS EVERY LETTER FROM FULL WORD
+        for (int i = 0; i < currentLevel.targetWord.Length; i++)
+        {
+            string id = currentLevel.targetWord.Substring(i, 1);
+            LetterDataSO data = GetLetterDataById(id);
+
+            if (data != null)
+            {
+                SpawnOneLetter(data);
+            }
+        }
     }
 
     private bool IsFarEnough(Vector3 letter)
@@ -241,6 +271,31 @@ public class SpawnManager : MonoBehaviour
         }
         return null;
     }
+
+    private LetterDataSO GetLetterDataById(string id)
+    {
+        if (currentLevel == null)
+        {
+            return null;
+        }
+
+        if (currentLevel.lettersPool == null)
+        {
+            return null;
+        }
+
+        for (int i = 0; i < currentLevel.lettersPool.Count; i++)
+        {
+            LetterDataSO data = currentLevel.lettersPool[i];
+            if (data != null && data.id == id)
+            {
+                return data;
+            }
+        }
+
+        return null;
+    }
+
 
     private void SpawnBackground()
     {
