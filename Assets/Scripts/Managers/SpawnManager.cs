@@ -21,8 +21,6 @@ public class SpawnManager : MonoBehaviour
 
     public static SpawnManager instance;
 
-    [SerializeField, Range(0f, 1f)] private float maxViewportYForSpawn = 0.85f;
-
 
 
 
@@ -121,7 +119,7 @@ public class SpawnManager : MonoBehaviour
     {
         int total = currentLevel.totalLettersToSpawn;
 
-        //ENTER WORD MODE
+        //ENTER WORD MODE & IGNORE
         if (currentLevel.targetWord != null && currentLevel.targetWord != "")
         {
             SpawnWordLetters();
@@ -195,9 +193,9 @@ public class SpawnManager : MonoBehaviour
 
     }
 
-    private void SpawnWordLetters(/*int total*/)
+    private void SpawnWordLetters()
     {
-        //MAKE SURE SPAWN CONTAINS EVERY LETTER FROM FULL WORD ONCE
+        //MAKE SURE SPAWN CONTAINS EVERY LETTER FROM FULL WORD
         for (int i = 0; i < currentLevel.targetWord.Length; i++)
         {
             string id = currentLevel.targetWord.Substring(i, 1);
@@ -266,17 +264,16 @@ public class SpawnManager : MonoBehaviour
         {
             return null;
         }
-
+        //CHECK LettersPool AND RETURN MATCHING LetterDataSO
         for (int i = 0; i < currentLevel.lettersPool.Count; i++)
         {
             LetterDataSO data = currentLevel.lettersPool[i];
-            //VERIFY CORRECT LETTER
+            //MATCH BY ID
             if (data != null && data.id == id)
             {
                 return data;
             }
         }
-
         return null;
     }
 

@@ -59,7 +59,7 @@ public class MainLetterUI : MonoBehaviour
         // CALLS CreateLetterImage() ONCE PER LETTER IN TargetWord
         for (int i = 0; i < targetWord.Length; i++)
         {
-            //USE Substring TO EXTRACT SINGLE LETTER AS ID
+            //Substring TO EXTRACT SINGLE LETTER AS ID
             string letterId = targetWord.Substring(i, 1);
             CreateLetterImage(letterId);
         }
@@ -72,6 +72,8 @@ public class MainLetterUI : MonoBehaviour
         Image newImage = Instantiate(letterImagePrefab, wordPanel);
         newImage.sprite = letterSprite;
         newImage.enabled = (letterSprite != null);
+
+        newImage.color = Color.black;
 
         letterImages.Add(newImage);
     }
@@ -97,7 +99,7 @@ public class MainLetterUI : MonoBehaviour
             return;
         }
 
-        collectedImage.color = Color.black;
+        collectedImage.color = Color.white;
     }
 
     private void ClearUI()

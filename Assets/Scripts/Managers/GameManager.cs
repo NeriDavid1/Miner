@@ -13,8 +13,8 @@ public class GameManager : MonoBehaviour
     public string ExpectedLetter;
     private int wordIndex;
 
-    public static event Action<LevelDataSO> OnLevelStarted;
-    public static event Action<int> OnWordIndexChanged;
+    public static event Action<LevelDataSO> OnLevelStarted; // UI + SPAWN MANAGER
+    public static event Action<int> OnWordIndexChanged; // UI
 
     public static GameManager instance;
 
@@ -69,22 +69,13 @@ public class GameManager : MonoBehaviour
 
     private bool IsWordMode()
     {
-        if (level == null)
-        {
-            return false;
-        }
-
-        if (level.targetWord == null)
-        {
-            return false;
-        }
-
-        if (level.targetWord == "")
+        if (level == null || level.targetWord == null || level.targetWord == "")
         {
             return false;
         }
         return true;
     }
+
 
     public void SetExpectedLetter()
     {
@@ -101,40 +92,11 @@ public class GameManager : MonoBehaviour
                 ExpectedLetter = null;
                 return;
             }
-
+            // wordIndex++ BY MainLetterDelivered 
             ExpectedLetter = level.targetWord.Substring(wordIndex, 1);
             return;
         }
         ExpectedLetter = level.mainLetter;
-    }
-
-
-
-    public bool TryGetLetter(string letterID)
-    {
-        if (level == null)
-        {
-            return false;
-        }
-
-        if (ExpectedLetter == null)
-        {
-            return false;
-        }
-
-        //Full Word Mode
-        if (IsWordMode())
-        {
-            return letterID == ExpectedLetter;
-        }
-
-        //Main Letter Mode
-        if (letterID != level.mainLetter)
-        {
-            return false;
-        }
-
-        return letterCounter < level.mainLetterCount;
     }
 
     private void MainLetterDelivered(string letterID)
@@ -157,7 +119,7 @@ public class GameManager : MonoBehaviour
                 return;
             }
             wordIndex++;
-            OnWordIndexChanged?.Invoke(wordIndex);
+            OnWordIndexChanged?.Invoke(wordIndex); //UI
             SetExpectedLetter();
 
             //Next Level
@@ -187,6 +149,35 @@ public class GameManager : MonoBehaviour
             Debug.Log("STAGE DONE");
             StartNextLevel();
         }
+    }
+
+
+
+    public bool TryGetLetter(string letterID)
+    {
+        if (level == null)
+        {
+            return false;
+        }
+
+        if (ExpectedLetter == null)
+        {
+            return false;
+        }
+
+        //Full Word Mode
+        if (IsWordMode())
+        {
+            return letterID == ExpectedLetter;
+        }
+
+        //Main Letter Mode
+        if (letterID != level.mainLetter)
+        {
+            return false;
+        }
+
+        return letterCounter < level.mainLetterCount;
     }
 
 }
