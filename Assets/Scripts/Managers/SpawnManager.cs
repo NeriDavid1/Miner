@@ -16,6 +16,7 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private Camera mainCamera;
     [SerializeField] private float minLetterDistance = 1f;
     [SerializeField] private Transform playerStartPoint;
+    [SerializeField] private float CameraMargin = 0.05f;
 
     private GameObject spawnedPlayer;
 
@@ -320,14 +321,20 @@ public class SpawnManager : MonoBehaviour
             Debug.Log($"{cam} was not defined in SpawnManager");
         }
 
-        Vector3 bottomLeft = cam.ViewportToWorldPoint(new Vector3(0f, 0f, cam.nearClipPlane));
-        Vector3 topRight = cam.ViewportToWorldPoint(new Vector3(1f, 1f, cam.nearClipPlane));
+        if (cam == null)
+        {
+            return Vector3.zero;
+        }
+
+        Vector3 bottomLeft = cam.ViewportToWorldPoint(new Vector3(CameraMargin, CameraMargin, cam.nearClipPlane));
+        Vector3 topRight = cam.ViewportToWorldPoint(new Vector3(1f - CameraMargin, 1f - CameraMargin, cam.nearClipPlane));
 
         float x = Random.Range(bottomLeft.x, topRight.x);
         float y = Random.Range(bottomLeft.y, topRight.y);
 
         return new Vector3(x, y, 0f);
     }
+
 
 
     //GIZMOZ

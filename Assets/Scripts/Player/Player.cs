@@ -8,7 +8,7 @@ public class Player : MonoBehaviour
     [SerializeField] private Transform catchAnchor;
     [SerializeField] private Transform rotateTransform;
     [SerializeField] private Transform ropeStretchBone;
-    [SerializeField] private float maxHookDistance = 5f;
+   // [SerializeField] private float maxHookDistance = 5f;
 
     //ROPE
     private Vector3 ropeRestLocalPos;
@@ -29,6 +29,9 @@ public class Player : MonoBehaviour
     private Transform carriedLetterTransform = null;
 
     [SerializeField] private Animator animator;
+
+    [SerializeField] private float viewportMargin = 0.02f; 
+
 
 
 
@@ -121,12 +124,21 @@ public class Player : MonoBehaviour
 
         currentRopeLength += hookSpeed * Time.deltaTime;
 
-        //CHANGE BOOLIANS IF DIDNT CATCH A LETTER & CROSSED MaxHookDistance
-        if (currentRopeLength >= maxHookDistance)
+        //CHECK IF HOOK INSIDE CAMERA BONDS
+        if (IsHookInsideScreen() == false)
         {
-            currentRopeLength = maxHookDistance;
             ReturnHook();
+            ApplyRopeLength();
+            return;
         }
+
+
+        //CHANGE BOOLIANS IF DIDNT CATCH A LETTER & CROSSED MaxHookDistance
+        //if (currentRopeLength >= maxHookDistance)
+        //{
+        //    currentRopeLength = maxHookDistance;
+        //    ReturnHook();
+        //}
 
         ApplyRopeLength();
     }
@@ -164,6 +176,49 @@ public class Player : MonoBehaviour
         ApplyRopeLength();
     }
 
+    private bool IsHookInsideScreen()
+    {
+        Camera cameraToUse = Camera.main;
+
+        if (cameraToUse == null)
+        {
+            return true;
+        }
+
+        if (catchAnchor == null)
+        {
+            return true;
+        }
+
+        Vector3 viewportPos = cameraToUse.WorldToViewportPoint(catchAnchor.position);
+
+        if (viewportPos.x < viewportMargin)
+        {
+            return false;
+        }
+
+        if (viewportPos.x > 1f - viewportMargin)
+        {
+            return false;
+        }
+
+        if (viewportPos.y < viewportMargin)
+        {
+            return false;
+        }
+
+        if (viewportPos.y > 1f - viewportMargin)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+
+
+
+
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -192,6 +247,7 @@ public class Player : MonoBehaviour
         }
         else
         {
+            letter.gameObject.SetActive(false);
             Debug.Log("Wrong Letter Hit");
             OnWrongLetterHit?.Invoke();
         }

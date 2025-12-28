@@ -219,7 +219,7 @@ PolygonCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1049173340233033787}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -830,7 +830,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1049173340233033787}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -1259,10 +1259,10 @@ MonoBehaviour:
   catchAnchor: {fileID: 1278613028086809048}
   rotateTransform: {fileID: 8777396373439199614}
   ropeStretchBone: {fileID: 6953486333863454421}
-  maxHookDistance: 400
   hookSpeed: 500
   rotationSpeed: 75
   animator: {fileID: 6953826110413882717}
+  viewportMargin: -0.05
 --- !u!50 &9078709031020182830
 Rigidbody2D:
   serializedVersion: 4
@@ -1383,7 +1383,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -24.4, y: 0.1, z: -0.37794983}
-  m_LocalScale: {x: 25, y: 25, z: 25}
+  m_LocalScale: {x: 33, y: 33, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 140611196834579334}
