@@ -26,4 +26,4 @@ MonoBehaviour:
   playerPrefab: {fileID: 7472869151234094916, guid: 9ae87636c9a5d404a8c22b0e9ef9ba6c, type: 3}
   backgroundPrefab: {fileID: 2922969682941220674, guid: 02a0cc4edb176f24db8f689c71f52fb8, type: 3}
   targetWord: 
-  totalLettersToSpawn: 9
+  totalLettersToSpawn: 20

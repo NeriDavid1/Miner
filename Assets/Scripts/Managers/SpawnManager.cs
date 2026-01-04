@@ -20,6 +20,8 @@ public class SpawnManager : MonoBehaviour
 
     private GameObject spawnedPlayer;
 
+    public Transform LevelRoot => levelRoot; // Game Manager
+
     public static SpawnManager instance;
 
 

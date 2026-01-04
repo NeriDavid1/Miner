@@ -50,8 +50,6 @@ public class Player : MonoBehaviour
             ropeRestLocalPos = ropeStretchBone.localPosition;
             currentRopeLength = 0f;
         }
-
-
     }
 
     private void UpdateAnimator()
@@ -60,7 +58,6 @@ public class Player : MonoBehaviour
         {
             return;
         }
-
         animator.SetBool("isRotating", isRotating);
         animator.SetBool("isShooting", isShooting);
         animator.SetBool("isReturning", isReturning);
@@ -79,13 +76,10 @@ public class Player : MonoBehaviour
         {
             rotateTransform.Rotate(0f, 0f, -rotationSpeed * Time.deltaTime); 
         }
-
         HookExit();
         HookReturn();
         UpdateAnimator();
-
     }
-
 
      private void ActivateHook()
      {
@@ -96,8 +90,6 @@ public class Player : MonoBehaviour
            isShooting = true;
          }
      }
-
-
 
     private void ReturnHook()
     {
@@ -111,7 +103,6 @@ public class Player : MonoBehaviour
         {
             return;
         }
-
         ropeStretchBone.localPosition = ropeRestLocalPos + Vector3.right * currentRopeLength;
     }
 
@@ -132,18 +123,14 @@ public class Player : MonoBehaviour
             return;
         }
 
-
         //CHANGE BOOLIANS IF DIDNT CATCH A LETTER & CROSSED MaxHookDistance
         //if (currentRopeLength >= maxHookDistance)
         //{
         //    currentRopeLength = maxHookDistance;
         //    ReturnHook();
         //}
-
         ApplyRopeLength();
     }
-
-
     private void HookReturn()
     {
         if (!isReturning || ropeStretchBone == null)
@@ -158,21 +145,33 @@ public class Player : MonoBehaviour
             currentRopeLength = 0f;
             isReturning = false;
             isRotating = true;
-
             //TO GAME MANAGER -  *AFTER* RETURNED
+            if (carriedLetterTransform != null)
+            {
+                Transform deliveredTransform = carriedLetterTransform;
+                carriedLetterTransform = null;
+
+                deliveredTransform.SetParent(SpawnManager.instance.LevelRoot, true); // BACK TO LevelRoot
+                //deliveredTransform.rotation = Quaternion.identity;
+
+                Letter deliveredLetter = deliveredTransform.GetComponent<Letter>();
+                if (deliveredLetter != null)
+                {
+                    deliveredLetter.PlayFxAndDisable();
+                }
+                else
+                {
+                    deliveredTransform.gameObject.SetActive(false);
+                }
+            }
+
+            // REPORT TO GAME MANAGER
             if (carriedMainLetterId != null)
             {
                 OnMainLetterDelivered?.Invoke(carriedMainLetterId);
                 carriedMainLetterId = null;
-
-                if (carriedLetterTransform != null)
-                {
-                    Destroy(carriedLetterTransform.gameObject);
-                    carriedLetterTransform = null;
-                }
             }
         }
-
         ApplyRopeLength();
     }
 
@@ -180,45 +179,20 @@ public class Player : MonoBehaviour
     {
         Camera cameraToUse = Camera.main;
 
-        if (cameraToUse == null)
-        {
-            return true;
-        }
-
-        if (catchAnchor == null)
+        if (cameraToUse == null || catchAnchor == null)
         {
             return true;
         }
 
         Vector3 viewportPos = cameraToUse.WorldToViewportPoint(catchAnchor.position);
 
-        if (viewportPos.x < viewportMargin)
-        {
-            return false;
-        }
-
-        if (viewportPos.x > 1f - viewportMargin)
-        {
-            return false;
-        }
-
-        if (viewportPos.y < viewportMargin)
-        {
-            return false;
-        }
-
-        if (viewportPos.y > 1f - viewportMargin)
+        if (viewportPos.x < viewportMargin || viewportPos.x > 1f - viewportMargin || viewportPos.y < viewportMargin || viewportPos.y > 1f - viewportMargin)
         {
             return false;
         }
 
         return true;
     }
-
-
-
-
-
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -251,9 +225,6 @@ public class Player : MonoBehaviour
             Debug.Log("Wrong Letter Hit");
             OnWrongLetterHit?.Invoke();
         }
-
         ReturnHook();
     }
-
-
 }

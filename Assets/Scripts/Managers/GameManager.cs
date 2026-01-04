@@ -21,11 +21,13 @@ public class GameManager : MonoBehaviour
     private void OnEnable()
     {
         Player.OnMainLetterDelivered += MainLetterDelivered;
+        Player.OnWrongLetterHit += CheckLettersInLevel;
     }
 
     private void OnDisable()
     {
         Player.OnMainLetterDelivered -= MainLetterDelivered;
+        Player.OnWrongLetterHit -= CheckLettersInLevel;
     }
     private void Awake()
     {
@@ -122,7 +124,7 @@ public class GameManager : MonoBehaviour
             OnWordIndexChanged?.Invoke(wordIndex); //UI
             SetExpectedLetter();
 
-            //Next Level
+            //Next Level if
             if (ExpectedLetter == null)
             {
                 Debug.Log("WORD DONE - STAGE DONE");
@@ -152,6 +154,46 @@ public class GameManager : MonoBehaviour
     }
 
 
+    private void CheckLettersInLevel()
+    {
+        if (!IsWordMode()) return;
+
+        // EXTRACT MISSING LETTERS FOR FULL WORD MODE
+        string remainingWord = level.targetWord.Substring(wordIndex);
+        Transform root = SpawnManager.instance.LevelRoot;
+
+        // TEMP LIST TO NOT USE THE SAME LETTER TWICE
+        List<Transform> usedInScan = new List<Transform>();
+
+        foreach (char character in remainingWord)
+        {
+            bool foundThisChar = false;
+            string charToFind = character.ToString();
+
+            //SCAN ALL OBJECTS UNDER LevelRoot
+            for (int i = 0; i < root.childCount; i++)
+            {
+                Transform child = root.GetChild(i);
+                Letter letterScript = child.GetComponent<Letter>();
+
+                // IF ACTIVE + ID + NOT COUNTED BEFORE
+                if (child.gameObject.activeSelf && letterScript != null && letterScript.letterID == charToFind && !usedInScan.Contains(child))
+                {
+                    usedInScan.Add(child);
+                    foundThisChar = true;
+                    break;
+                }
+            }
+
+            // StartGame() IF MISSING LETTER
+            if (!foundThisChar)
+            {
+                Debug.LogError("GAME OVER: Missing letter " + charToFind);
+                StartGame();
+                return;
+            }
+        }
+    }
 
     public bool TryGetLetter(string letterID)
     {
