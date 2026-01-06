@@ -1261,6 +1261,7 @@ MonoBehaviour:
   ropeStretchBone: {fileID: 6953486333863454421}
   hookSpeed: 500
   rotationSpeed: 75
+  deliverTarget: {fileID: 6953486333863454421}
   animator: {fileID: 6953826110413882717}
   viewportMargin: -0.05
 --- !u!50 &9078709031020182830

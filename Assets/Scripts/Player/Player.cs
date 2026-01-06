@@ -20,6 +20,8 @@ public class Player : MonoBehaviour
     private bool isReturning = false;
     //private Vector3 hookStartLocalPos;
     //private Vector3 shootDirection;
+    [SerializeField] private Transform deliverTarget;
+
 
     public static event Action<string> OnMainLetterDelivered;
     public static event Action OnWrongLetterHit;
@@ -157,7 +159,7 @@ public class Player : MonoBehaviour
                 Letter deliveredLetter = deliveredTransform.GetComponent<Letter>();
                 if (deliveredLetter != null)
                 {
-                    deliveredLetter.PlayFxAndDisable();
+                    deliveredLetter.PlayFxAndDisable(deliverTarget);
                 }
                 else
                 {

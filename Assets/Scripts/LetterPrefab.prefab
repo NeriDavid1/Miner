@@ -103,3 +103,6 @@ MonoBehaviour:
   letterID: 
   riseDistance: 5
   riseDuration: 4
+  scaleMultiplier: 1.8
+  scaleDuration: 2
+  moveToTargetDuration: 0.5

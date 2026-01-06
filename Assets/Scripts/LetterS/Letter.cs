@@ -17,6 +17,12 @@ public class Letter : MonoBehaviour
     [SerializeField] private float riseDistance = 0.7f;
     [SerializeField] private float riseDuration = 0.25f;
 
+  //  [SerializeField] private Transform deliverTarget;
+    [SerializeField] private float scaleMultiplier = 1.8f;
+    [SerializeField] private float scaleDuration = 0.18f;
+    [SerializeField] private float moveToTargetDuration = 0.12f;
+
+
     //public static event Action<Letter> OnCollected;
     private void Awake()
     {
@@ -44,50 +50,99 @@ public class Letter : MonoBehaviour
             gameObject.AddComponent<PolygonCollider2D>();
         }
     }
-    public void PlayFxAndDisable()
-    {        
-        //if (deliveryRoutine != null)
-        //{
-        //    StopCoroutine(deliveryRoutine);
-        //}
-
-        deliveryRoutine = StartCoroutine(DeliverRoutine());
+    public void PlayFxAndDisable(Transform deliverTarget)
+    {
+        deliveryRoutine = StartCoroutine(DeliverRoutine(deliverTarget));
     }
 
-    private IEnumerator DeliverRoutine()
+
+    private IEnumerator DeliverRoutine(Transform deliverTarget)
     {
         Collider2D col = GetComponent<Collider2D>();
-        if (col != null) 
+        if (col != null)
         {
             col.enabled = false;
         }
 
         transform.rotation = Quaternion.identity;
-        Vector3 startPosition = transform.position;
-        Vector3 endPosition = startPosition + Vector3.up * riseDistance;
 
-        float elapsedTime = 0f;
+        // SCALE
+        Vector3 startScale = transform.localScale;
+        Vector3 endScale = startScale * scaleMultiplier;
 
-        while (elapsedTime < riseDuration)
+        //MOVE TO CENTER
+        if (deliverTarget != null)
         {
-            elapsedTime += Time.deltaTime;
-
-            float normalizedProgress = elapsedTime / riseDuration;
-            if (normalizedProgress > 1f)
+            if (moveToTargetDuration > 0f)
             {
-                normalizedProgress = 1f;
-            }
+                Vector3 moveStartPosition = transform.position;
+                Vector3 moveEndPosition = deliverTarget.position;
 
-            transform.position = Vector3.Lerp(startPosition, endPosition, normalizedProgress);
+                float moveElapsedTime = 0f;
+
+                while (moveElapsedTime < moveToTargetDuration)
+                {
+                    moveElapsedTime += Time.deltaTime;
+
+                    float moveProgress = moveElapsedTime / moveToTargetDuration;
+                    if (moveProgress > 1f) moveProgress = 1f;
+
+                    transform.position = Vector3.Lerp(moveStartPosition, moveEndPosition, moveProgress);
+
+                    yield return null;
+                }
+            }
+            transform.position = deliverTarget.position;
+        }
+
+        //SCALE ONLY IN CENTER
+        if (scaleDuration > 0f)
+        {
+            float scaleElapsedTime = 0f;
+
+            while (scaleElapsedTime < scaleDuration)
+            {
+                scaleElapsedTime += Time.deltaTime;
+
+                float scaleProgress = scaleElapsedTime / scaleDuration;
+
+                if (scaleProgress > 1f) 
+                { 
+                    scaleProgress = 1f;
+                }
+
+                if (deliverTarget != null)
+                {
+                    transform.position = deliverTarget.position;
+                }
+                transform.localScale = Vector3.Lerp(startScale, endScale, scaleProgress);
+                yield return null;
+            }
+        }
+
+        // ENSURE SCALE BEFORE RISE
+        transform.localScale = endScale;
+
+        //RISE
+        Vector3 riseStartPosition = transform.position;
+        Vector3 riseEndPosition = riseStartPosition + Vector3.up * riseDistance;
+
+        float riseElapsedTime = 0f;
+
+        while (riseElapsedTime < riseDuration)
+        {
+            riseElapsedTime += Time.deltaTime;
+
+            float riseProgress = riseElapsedTime / riseDuration;
+            if (riseProgress > 1f) riseProgress = 1f;
+
+            transform.position = Vector3.Lerp(riseStartPosition, riseEndPosition, riseProgress);
 
             yield return null;
         }
-
         gameObject.SetActive(false);
-
         deliveryRoutine = null;
     }
-
 }
 
 
