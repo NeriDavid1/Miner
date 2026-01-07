@@ -24,12 +24,8 @@ public class SpawnManager : MonoBehaviour
 
     public static SpawnManager instance;
 
-
-
-
     private void Awake()
     {
-        
         if (instance != null && instance != this) 
         {
             Destroy(gameObject);
@@ -51,8 +47,6 @@ public class SpawnManager : MonoBehaviour
         SpawnBackground();
         SpawnPlayer();
         SpawnLetters();
-        
-
     }
 
     private void SpawnPlayer()
@@ -135,7 +129,6 @@ public class SpawnManager : MonoBehaviour
             }
             return;
         }
-
         //SINGLE LETTER MODE
         int mainCount = currentLevel.mainLetterCount;
         int regularCount = total - mainCount;
@@ -181,7 +174,6 @@ public class SpawnManager : MonoBehaviour
                 nonMainPool.Add(letterData);
             }
         }
-
         if (nonMainPool.Count == 0)
         {
             return;
@@ -192,8 +184,6 @@ public class SpawnManager : MonoBehaviour
             int index = Random.Range(0, nonMainPool.Count);
             SpawnOneLetter(nonMainPool[index]);
         }
-
-
     }
 
     private void SpawnWordLetters()
@@ -336,8 +326,6 @@ public class SpawnManager : MonoBehaviour
 
         return new Vector3(x, y, 0f);
     }
-
-
 
     //GIZMOZ
     private void OnDrawGizmosSelected()

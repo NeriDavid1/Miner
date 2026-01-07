@@ -15,10 +15,8 @@ public class LevelDataSO : ScriptableObject
     public GameObject backgroundPrefab;
     public string targetWord;
 
+    public string endStageText;
+
     //SPAWNS
     public int totalLettersToSpawn = 5;
-    //public int maxSpawnSlotsToUse = 10;
-    
-
-
 }

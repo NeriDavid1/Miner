@@ -11,10 +11,6 @@ public class WrongLetterVfxSpawner : MonoBehaviour
     {
         Player.OnWrongLetterHit += HandleWrongLetterHit;
     }
-    //private void OnEnable()
-    //{
-    //    Player.OnWrongLetterHit += HandleWrongLetterHit;
-    //}
 
     private void OnDisable()
     {
@@ -60,7 +56,6 @@ public class WrongLetterVfxSpawner : MonoBehaviour
             return;
         }
 
-      //pooledParticle.transform.localPosition = spawnPoint.transform.position;
         pooledParticle.transform.position = spawnPoint.position;
         pooledParticle.SetActive(true);
         StartCoroutine(ActivateParticle(pooledParticle));
@@ -68,7 +63,6 @@ public class WrongLetterVfxSpawner : MonoBehaviour
 
     IEnumerator ActivateParticle(GameObject particle)
     {
-        //particle.SetActive(true);
         float time = 0;
         if (particle.TryGetComponent<ParticleSystem>(out var ps))
         {

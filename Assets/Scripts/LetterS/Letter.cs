@@ -14,16 +14,15 @@ public class Letter : MonoBehaviour
 
     private Coroutine deliveryRoutine;
 
+    [SerializeField] private AudioSource audioSource;
+
     [SerializeField] private float riseDistance = 0.7f;
     [SerializeField] private float riseDuration = 0.25f;
 
-  //  [SerializeField] private Transform deliverTarget;
     [SerializeField] private float scaleMultiplier = 1.8f;
     [SerializeField] private float scaleDuration = 0.18f;
     [SerializeField] private float moveToTargetDuration = 0.12f;
 
-
-    //public static event Action<Letter> OnCollected;
     private void Awake()
     {
 
@@ -50,10 +49,32 @@ public class Letter : MonoBehaviour
             gameObject.AddComponent<PolygonCollider2D>();
         }
     }
+
+    private void PlayVoiceClip()
+    {
+        if (audioSource == null)
+        {
+            return;
+        }
+
+        if (data == null)
+        {
+            return;
+        }
+
+        if (data.voiceClip == null)
+        {
+            return;
+        }
+
+        audioSource.PlayOneShot(data.voiceClip);
+    }
+
     public void PlayFxAndDisable(Transform deliverTarget)
     {
         deliveryRoutine = StartCoroutine(DeliverRoutine(deliverTarget));
     }
+
 
 
     private IEnumerator DeliverRoutine(Transform deliverTarget)
@@ -122,6 +143,9 @@ public class Letter : MonoBehaviour
 
         // ENSURE SCALE BEFORE RISE
         transform.localScale = endScale;
+
+        PlayVoiceClip();
+
 
         //RISE
         Vector3 riseStartPosition = transform.position;

@@ -8,7 +8,6 @@ public class Player : MonoBehaviour
     [SerializeField] private Transform catchAnchor;
     [SerializeField] private Transform rotateTransform;
     [SerializeField] private Transform ropeStretchBone;
-   // [SerializeField] private float maxHookDistance = 5f;
 
     //ROPE
     private Vector3 ropeRestLocalPos;
@@ -18,8 +17,6 @@ public class Player : MonoBehaviour
     private bool isRotating = true;
     private bool isShooting = false;
     private bool isReturning = false;
-    //private Vector3 hookStartLocalPos;
-    //private Vector3 shootDirection;
     [SerializeField] private Transform deliverTarget;
 
 
@@ -32,19 +29,15 @@ public class Player : MonoBehaviour
 
     [SerializeField] private Animator animator;
 
-    [SerializeField] private float viewportMargin = 0.02f; 
+    [SerializeField] private float viewportMargin = 0.02f;
 
-
-
-
+    private string pendingDeliveredId = null;
+    private Transform pendingDeliveredTransform = null;
+    private Coroutine pendingReportRoutine = null;
+    private float animatorSpeedBeforeFreeze = 1f;
 
     void Start()
     {
-        // RECORD START POSITION
-        //if (hookTransform != null)
-        //{
-        //    hookStartLocalPos = hookTransform.localPosition;
-        //}
 
         // RECORD ROPE POSITION
         if (ropeStretchBone != null)
@@ -124,13 +117,6 @@ public class Player : MonoBehaviour
             ApplyRopeLength();
             return;
         }
-
-        //CHANGE BOOLIANS IF DIDNT CATCH A LETTER & CROSSED MaxHookDistance
-        //if (currentRopeLength >= maxHookDistance)
-        //{
-        //    currentRopeLength = maxHookDistance;
-        //    ReturnHook();
-        //}
         ApplyRopeLength();
     }
     private void HookReturn()
@@ -147,14 +133,17 @@ public class Player : MonoBehaviour
             currentRopeLength = 0f;
             isReturning = false;
             isRotating = true;
-            //TO GAME MANAGER -  *AFTER* RETURNED
+
+
+            // DELIVER LETTER + FX
+            Transform deliveredTransform = null;
+
             if (carriedLetterTransform != null)
             {
-                Transform deliveredTransform = carriedLetterTransform;
+                deliveredTransform = carriedLetterTransform;
                 carriedLetterTransform = null;
 
                 deliveredTransform.SetParent(SpawnManager.instance.LevelRoot, true); // BACK TO LevelRoot
-                //deliveredTransform.rotation = Quaternion.identity;
 
                 Letter deliveredLetter = deliveredTransform.GetComponent<Letter>();
                 if (deliveredLetter != null)
@@ -167,14 +156,68 @@ public class Player : MonoBehaviour
                 }
             }
 
-            // REPORT TO GAME MANAGER
-            if (carriedMainLetterId != null)
+            if (carriedMainLetterId == null)
             {
-                OnMainLetterDelivered?.Invoke(carriedMainLetterId);
-                carriedMainLetterId = null;
+                return;
             }
+
+            pendingDeliveredId = carriedMainLetterId;
+            carriedMainLetterId = null;
+
+            pendingDeliveredTransform = deliveredTransform;
+
+            pendingReportRoutine = StartCoroutine(ReportWhenLetterDisabled());
         }
         ApplyRopeLength();
+    }
+
+    private IEnumerator ReportWhenLetterDisabled()
+    {
+        FreezePlayerVisual();
+
+        // WAIT FOR LETTER TO TURN OFF
+        while (pendingDeliveredTransform != null && pendingDeliveredTransform.gameObject.activeSelf == true)
+        {
+            yield return null;
+        }
+
+        // Unfreeze
+        UnfreezePlayerVisual();
+
+        // REPORT TO GAME MANAGER
+        if (pendingDeliveredId != null)
+        {
+            OnMainLetterDelivered?.Invoke(pendingDeliveredId);
+        }
+
+        pendingDeliveredId = null;
+        pendingDeliveredTransform = null;
+        pendingReportRoutine = null;
+    }
+
+
+    private void FreezePlayerVisual()
+    {
+        isRotating = false;
+
+        if (animator != null)
+        {
+            animatorSpeedBeforeFreeze = animator.speed;
+            animator.speed = 0f;
+        }
+    }
+
+    private void UnfreezePlayerVisual()
+    {
+        if (animator != null)
+        {
+            animator.speed = animatorSpeedBeforeFreeze;
+        }
+
+        if (isShooting == false && isReturning == false)
+        {
+            isRotating = true;
+        }
     }
 
     private bool IsHookInsideScreen()
@@ -192,7 +235,6 @@ public class Player : MonoBehaviour
         {
             return false;
         }
-
         return true;
     }
 
