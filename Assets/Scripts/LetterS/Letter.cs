@@ -23,20 +23,6 @@ public class Letter : MonoBehaviour
     [SerializeField] private float scaleDuration = 0.18f;
     [SerializeField] private float moveToTargetDuration = 0.12f;
 
-    private void Awake()
-    {
-
-    }
-    void Start()
-    {
-
-    }
-
-    void Update()
-    {
-
-    }
-
     public void Init(LetterDataSO data, Sprite sprite, bool isMainLetter)
     {
         this.data = data;

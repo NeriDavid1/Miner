@@ -13,6 +13,4 @@ MonoBehaviour:
   m_Name: U_A
   m_EditorClassIdentifier: 
   id: A
-  image: {fileID: 0}
-  waight: 0
-  score: 0
+  voiceClip: {fileID: 8300000, guid: 64ba9602bdbaa5946a0c6de50602efbc, type: 3}

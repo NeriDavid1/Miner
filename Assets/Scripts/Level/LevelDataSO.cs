@@ -17,6 +17,8 @@ public class LevelDataSO : ScriptableObject
 
     public string endStageText;
 
+    public ParticleSystem endStageVfxPrefab;
+
     //SPAWNS
     public int totalLettersToSpawn = 5;
 }

@@ -327,6 +327,13 @@ public class SpawnManager : MonoBehaviour
         return new Vector3(x, y, 0f);
     }
 
+    //LevelCompletedUI - UI FIREWORKS AT RANDOM PLACES
+    public Vector3 GetRandomPointInCameraBoundsForVfx()
+    {
+        return GetRandomPointInCameraBounds();
+    }
+
+
     //GIZMOZ
     private void OnDrawGizmosSelected()
     {

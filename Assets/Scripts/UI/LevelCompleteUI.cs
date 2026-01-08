@@ -1,0 +1,94 @@
+using System.Collections;
+using UnityEngine;
+using TMPro;
+
+public class LevelCompleteUI : MonoBehaviour
+{
+    [SerializeField] private GameObject endLevelPanel;
+    [SerializeField] private TextMeshProUGUI statusText;
+    [SerializeField] private float delayBeforeNextLevel = 5f;
+
+    [SerializeField] private int fireworksSpawns = 4;
+    [SerializeField] private float spawnInterval = 0.3f;
+
+    private GameObject fireworksGroup; //HOLDS ALL VFX
+
+    private void OnEnable()
+    {
+        GameManager.OnLevelCompleted += HandleLevelCompleted;
+        endLevelPanel.SetActive(false);
+    }
+
+    private void OnDisable()
+    {
+        GameManager.OnLevelCompleted -= HandleLevelCompleted;
+    }
+
+    private void HandleLevelCompleted(string message)
+    {
+        statusText.text = message;
+        StartCoroutine(ShowSequence());
+    }
+
+    private ParticleSystem GetEndStageVfxPrefab()
+    {
+        if (GameManager.instance == null)
+        {
+            return null; 
+        }
+        if (GameManager.instance.level == null) 
+        {
+            return null; 
+        }
+        return GameManager.instance.level.endStageVfxPrefab;
+    }
+
+
+    private IEnumerator ShowSequence()
+    {
+        endLevelPanel.SetActive(true);
+
+        ParticleSystem vfxPrefab = GetEndStageVfxPrefab();
+
+        // USE RANDOMPOSITION FROM SPAWN MANAGER
+        if (vfxPrefab != null && SpawnManager.instance != null)
+        {
+            fireworksGroup = new GameObject("EndLevelFireworksGroup");
+
+            float timeSpentSpawning = 0f;
+
+            for (int i = 0; i < fireworksSpawns; i++)
+            {
+                Vector3 randomPosition = SpawnManager.instance.GetRandomPointInCameraBoundsForVfx();
+                randomPosition.z = 0f;
+
+                ParticleSystem fireworkInstance = Instantiate(vfxPrefab, randomPosition, Quaternion.identity, fireworksGroup.transform);
+
+                fireworkInstance.Play(true);
+
+                yield return new WaitForSeconds(spawnInterval);
+                timeSpentSpawning += spawnInterval;
+            }
+
+            float remainingTime = delayBeforeNextLevel - timeSpentSpawning;
+
+            if (remainingTime > 0f)
+            {
+                yield return new WaitForSeconds(remainingTime);
+            }
+        }
+        else
+        {
+            yield return new WaitForSeconds(delayBeforeNextLevel);
+        }
+
+        // DESTROY AFTER MESSAGE TURNS OFF
+        if (fireworksGroup != null)
+        {
+            Destroy(fireworksGroup);
+            fireworksGroup = null;
+        }
+
+        endLevelPanel.SetActive(false);
+    }
+}

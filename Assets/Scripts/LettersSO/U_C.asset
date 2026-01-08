@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: U_C
   m_EditorClassIdentifier: 
   id: C
+  voiceClip: {fileID: 8300000, guid: 64ba9602bdbaa5946a0c6de50602efbc, type: 3}

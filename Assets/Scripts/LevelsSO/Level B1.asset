@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a32621d51b2fe6c418b11e11dd7d2723, type: 3}
+  m_Name: Level B1
+  m_EditorClassIdentifier: 
+  levelName: B1
+  background: {fileID: 10911, guid: 0000000000000000f000000000000000, type: 0}
+  mainLetter: B
+  mainLetterCount: 2
+  lettersPool:
+  - {fileID: 11400000, guid: eab9fc2319328bf498aeefcb48e752ae, type: 2}
+  - {fileID: 11400000, guid: b6b52be3c34cdbe4181b01a308e63216, type: 2}
+  - {fileID: 11400000, guid: c4deac2f613c67d498534e173063da83, type: 2}
+  - {fileID: 11400000, guid: 2d987c037c337774e9c7e59522f1b6cb, type: 2}
+  - {fileID: 11400000, guid: 5ebb56ceb31a2fb44bfa2d7c813e6bb1, type: 2}
+  - {fileID: 11400000, guid: 16dca74dcfd115641bcb4edd6b37d442, type: 2}
+  playerPrefab: {fileID: 7472869151234094916, guid: 9ae87636c9a5d404a8c22b0e9ef9ba6c, type: 3}
+  backgroundPrefab: {fileID: 2922969682941220674, guid: 02a0cc4edb176f24db8f689c71f52fb8, type: 3}
+  targetWord: 
+  totalLettersToSpawn: 20

@@ -18,6 +18,8 @@ public class GameManager : MonoBehaviour
 
     public static GameManager instance;
 
+    public static event Action<string> OnLevelCompleted; // END STAGE UI
+
     private void OnEnable()
     {
         Player.OnMainLetterDelivered += MainLetterDelivered;
@@ -59,15 +61,15 @@ public class GameManager : MonoBehaviour
         SpawnManager.instance.CreateLevel(level);
     }
 
-    public void StartNextLevel()
-    {
-        currentLevel++;
-        if (currentLevel >= LevelDataBase.dataSO.Count)
-        {
-            return;
-        }
-        StartGame();
-    }
+    //public void StartNextLevel()
+    //{
+    //    currentLevel++;
+    //    if (currentLevel >= LevelDataBase.dataSO.Count)
+    //    {
+    //        return;
+    //    }
+    //    StartGame();
+    //}
 
     private bool IsWordMode()
     {
@@ -127,8 +129,9 @@ public class GameManager : MonoBehaviour
             //Next Level if
             if (ExpectedLetter == null)
             {
+                OnLevelCompleted?.Invoke(level.endStageText); // TO LevelCompleteUI
                 Debug.Log("WORD DONE - STAGE DONE");
-                StartNextLevel();
+              //  StartNextLevel();
             }
             return;
         }
@@ -148,8 +151,9 @@ public class GameManager : MonoBehaviour
 
         if (letterCounter >= level.mainLetterCount)
         {
+            OnLevelCompleted?.Invoke(level.endStageText); // TO LevelCompleteUI
             Debug.Log("STAGE DONE");
-            StartNextLevel();
+          //  StartNextLevel();
         }
     }
 
