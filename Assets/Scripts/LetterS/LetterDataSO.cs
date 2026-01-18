@@ -1,8 +1,12 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-[CreateAssetMenu(menuName = "GoldMiner/LetterDataSO")]
-public class LetterDataSO : ScriptableObject
+
+namespace MinerGameMode
 {
-    public string id;
-    public AudioClip voiceClip;
+    [CreateAssetMenu(menuName = "GoldMiner/LetterDataSO")]
+    public class LetterDataSO : ScriptableObject
+    {
+        public string id;
+        public AudioClip voiceClip;
+    }
 }

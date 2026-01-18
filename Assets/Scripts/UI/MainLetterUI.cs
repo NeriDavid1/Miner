@@ -1,114 +1,118 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MainLetterUI : MonoBehaviour
+
+namespace MinerGameMode
 {
-    [SerializeField] private Transform wordPanel;
-    [SerializeField] private Image letterImagePrefab;
-    [SerializeField] private LettersDataBase lettersDataBase;
-
-    private List<Image> letterImages = new List<Image>();
-
-    private void OnEnable()
+    public class MainLetterUI : MonoBehaviour
     {
-        MinerMode.OnLevelStarted += HandleLevelStarted;
-        MinerMode.OnWordIndexChanged += PaintColor;
-
-        if (MinerMode.instance != null)
+        [SerializeField] private Transform wordPanel;
+        [SerializeField] private Image letterImagePrefab;
+        [SerializeField] private LettersDataBase lettersDataBase;
+    
+        private List<Image> letterImages = new List<Image>();
+    
+        private void OnEnable()
         {
-            if (MinerMode.instance.level != null)
+            MinerMode.OnLevelStarted += HandleLevelStarted;
+            MinerMode.OnWordIndexChanged += PaintColor;
+    
+            if (MinerMode.instance != null)
             {
-                HandleLevelStarted(MinerMode.instance.level);
+                if (MinerMode.instance.level != null)
+                {
+                    HandleLevelStarted(MinerMode.instance.level);
+                }
             }
         }
-    }
-
-    private void OnDisable()
-    {
-        MinerMode.OnLevelStarted -= HandleLevelStarted;
-        MinerMode.OnWordIndexChanged -= PaintColor;
-    }
-
-    private void HandleLevelStarted(LevelDataSO level)
-    {
-
-        if (lettersDataBase == null || wordPanel == null || letterImagePrefab == null || level == null)
+    
+        private void OnDisable()
         {
-            Debug.Log("MainLetterUI OR level missing references.");
-            return;
+            MinerMode.OnLevelStarted -= HandleLevelStarted;
+            MinerMode.OnWordIndexChanged -= PaintColor;
         }
-
-        ClearUI();
-
-        // SPAWN IMAGE PER LETTER IF TargetWord IS FILLED
-        if (level.targetWord != null)
+    
+        private void HandleLevelStarted(LevelDataSO level)
         {
-            if (level.targetWord != "")
+    
+            if (lettersDataBase == null || wordPanel == null || letterImagePrefab == null || level == null)
             {
-                BuildWordUI(level.targetWord);
+                Debug.Log("MainLetterUI OR level missing references.");
                 return;
             }
+    
+            ClearUI();
+    
+            // SPAWN IMAGE PER LETTER IF TargetWord IS FILLED
+            if (level.targetWord != null)
+            {
+                if (level.targetWord != "")
+                {
+                    BuildWordUI(level.targetWord);
+                    return;
+                }
+            }
+            // SPAWN SINGLE LETTER IF TargetWord IS NOT FILLED
+            CreateLetterImage(level.mainLetter);
         }
-        // SPAWN SINGLE LETTER IF TargetWord IS NOT FILLED
-        CreateLetterImage(level.mainLetter);
-    }
-
-    private void BuildWordUI(string targetWord)
-    {
-        // CALLS CreateLetterImage() ONCE PER LETTER IN TargetWord
-        for (int i = 0; i < targetWord.Length; i++)
+    
+        private void BuildWordUI(string targetWord)
         {
-            //Substring TO EXTRACT SINGLE LETTER AS ID
-            string letterId = targetWord.Substring(i, 1);
-            CreateLetterImage(letterId);
+            // CALLS CreateLetterImage() ONCE PER LETTER IN TargetWord
+            for (int i = 0; i < targetWord.Length; i++)
+            {
+                //Substring TO EXTRACT SINGLE LETTER AS ID
+                string letterId = targetWord.Substring(i, 1);
+                CreateLetterImage(letterId);
+            }
         }
-    }
-
-    private void CreateLetterImage(string letterId)
-    {
-        Sprite letterSprite = lettersDataBase.GetSpriteByName(letterId);
-
-        Image newImage = Instantiate(letterImagePrefab, wordPanel);
-        newImage.sprite = letterSprite;
-        newImage.enabled = (letterSprite != null);
-
-        newImage.color = Color.black;
-
-        letterImages.Add(newImage);
-    }
-
-    private void PaintColor(int wordIndex)
-    {
-        int collectedIndex = wordIndex - 1;
-
-        if (collectedIndex < 0)
+    
+        private void CreateLetterImage(string letterId)
         {
-            return;
+            Sprite letterSprite = lettersDataBase.GetSpriteByName(letterId);
+    
+            Image newImage = Instantiate(letterImagePrefab, wordPanel);
+            newImage.sprite = letterSprite;
+            newImage.enabled = (letterSprite != null);
+    
+            newImage.color = Color.black;
+    
+            letterImages.Add(newImage);
         }
-
-        if (collectedIndex >= letterImages.Count)
+    
+        private void PaintColor(int wordIndex)
         {
-            return;
+            int collectedIndex = wordIndex - 1;
+    
+            if (collectedIndex < 0)
+            {
+                return;
+            }
+    
+            if (collectedIndex >= letterImages.Count)
+            {
+                return;
+            }
+    
+            Image collectedImage = letterImages[collectedIndex];
+    
+            if (collectedImage == null)
+            {
+                return;
+            }
+    
+            collectedImage.color = Color.white;
         }
-
-        Image collectedImage = letterImages[collectedIndex];
-
-        if (collectedImage == null)
+    
+        private void ClearUI()
         {
-            return;
-        }
-
-        collectedImage.color = Color.white;
-    }
-
-    private void ClearUI()
-    {
-        letterImages.Clear();
-
-        for (int i = wordPanel.childCount - 1; i >= 0; i--)
-        {
-            Destroy(wordPanel.GetChild(i).gameObject);
+            letterImages.Clear();
+    
+            for (int i = wordPanel.childCount - 1; i >= 0; i--)
+            {
+                Destroy(wordPanel.GetChild(i).gameObject);
+            }
         }
     }
 }

@@ -1,80 +1,84 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEditor.EditorTools;
 using UnityEngine;
 
-public class VfxPoolManager : MonoBehaviour
+
+namespace MinerGameMode
 {
-    public static VfxPoolManager Instance { get; private set; }
-
-    [SerializeField] private GameObject particlePrefab;
-    [SerializeField] private int initialSize = 4;
-    [SerializeField] private Transform poolRoot;
-
-    private Queue<GameObject> availableParticles = new Queue<GameObject>();
-
-    private void Awake()
+    public class VfxPoolManager : MonoBehaviour
     {
-        if (Instance != null && Instance != this)
+        public static VfxPoolManager Instance { get; private set; }
+    
+        [SerializeField] private GameObject particlePrefab;
+        [SerializeField] private int initialSize = 4;
+        [SerializeField] private Transform poolRoot;
+    
+        private Queue<GameObject> availableParticles = new Queue<GameObject>();
+    
+        private void Awake()
         {
-            Destroy(gameObject);
-            return;
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+    
+            Instance = this;
+    
+    
+            WarmUp();
         }
-
-        Instance = this;
-
-
-        WarmUp();
-    }
-
-    private void WarmUp()
-    {
-        if (particlePrefab == null)
+    
+        private void WarmUp()
         {
-            return;
+            if (particlePrefab == null)
+            {
+                return;
+            }
+    
+            for (int i = 0; i < initialSize; i++)
+            {
+                GameObject newParticle = CreateNew();
+                Release(newParticle);
+            }
         }
-
-        for (int i = 0; i < initialSize; i++)
+    
+        private GameObject CreateNew()
         {
-            GameObject newParticle = CreateNew();
-            Release(newParticle);
+            GameObject particleGameObject = Instantiate(particlePrefab, poolRoot);
+            particleGameObject.SetActive(false);
+    
+            return particleGameObject;
         }
-    }
-
-    private GameObject CreateNew()
-    {
-        GameObject particleGameObject = Instantiate(particlePrefab, poolRoot);
-        particleGameObject.SetActive(false);
-
-        return particleGameObject;
-    }
-
-
-
-    public GameObject GetParticle()
-    {
-        if (availableParticles.Count > 0)
+    
+    
+    
+        public GameObject GetParticle()
         {
-            return availableParticles.Dequeue();
+            if (availableParticles.Count > 0)
+            {
+                return availableParticles.Dequeue();
+            }
+    
+            if (particlePrefab == null)
+            {
+                return null;
+            }
+    
+            return CreateNew();
         }
-
-        if (particlePrefab == null)
+    
+        public void Release(GameObject pooledParticle)
         {
-            return null;
+            if (pooledParticle == null)
+            {
+                return;
+            }
+    
+            pooledParticle.transform.SetParent(poolRoot, true);
+            pooledParticle.gameObject.SetActive(false);
+    
+            availableParticles.Enqueue(pooledParticle);
         }
-
-        return CreateNew();
-    }
-
-    public void Release(GameObject pooledParticle)
-    {
-        if (pooledParticle == null)
-        {
-            return;
-        }
-
-        pooledParticle.transform.SetParent(poolRoot, true);
-        pooledParticle.gameObject.SetActive(false);
-
-        availableParticles.Enqueue(pooledParticle);
     }
 }

@@ -1,49 +1,53 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "GoldMiner/LettersDataBase")]
 
-public class LettersDataBase : ScriptableObject
+namespace MinerGameMode
 {
-
-    public List<Sprite> lettersSprites;
-
-    private Dictionary<string, Sprite> spriteMap;
-
-    public void Init()
+    [CreateAssetMenu(menuName = "GoldMiner/LettersDataBase")]
+    
+    public class LettersDataBase : ScriptableObject
     {
-        if (spriteMap != null) return;
-
-        spriteMap = new Dictionary<string, Sprite>();
-        foreach (var sprite in lettersSprites)
+    
+        public List<Sprite> lettersSprites;
+    
+        private Dictionary<string, Sprite> spriteMap;
+    
+        public void Init()
         {
-            string key = sprite.name.Replace("L_", "").Replace("U_", "").Trim();
-            if (!spriteMap.ContainsKey(key))
+            if (spriteMap != null) return;
+    
+            spriteMap = new Dictionary<string, Sprite>();
+            foreach (var sprite in lettersSprites)
             {
-                spriteMap.Add(key, sprite);
-            }
-            else
-            {
-                Debug.LogWarning($"Duplicate sprite name: {key}");
+                string key = sprite.name.Replace("L_", "").Replace("U_", "").Trim();
+                if (!spriteMap.ContainsKey(key))
+                {
+                    spriteMap.Add(key, sprite);
+                }
+                else
+                {
+                    Debug.LogWarning($"Duplicate sprite name: {key}");
+                }
             }
         }
-    }
-
-    public Sprite GetSpriteByName(string name)
-    {
-        Init();
-
-        Debug.Log($"Looking for sprite with name: '{name}'");
-
-        if (spriteMap.TryGetValue(name, out Sprite sprite))
+    
+        public Sprite GetSpriteByName(string name)
         {
-            Debug.Log($"Found sprite: {name}");
-            return sprite;
+            Init();
+    
+            Debug.Log($"Looking for sprite with name: '{name}'");
+    
+            if (spriteMap.TryGetValue(name, out Sprite sprite))
+            {
+                Debug.Log($"Found sprite: {name}");
+                return sprite;
+            }
+    
+            Debug.LogWarning($"No sprite found for letter: '{name}'");
+            return null;
         }
-
-        Debug.LogWarning($"No sprite found for letter: '{name}'");
-        return null;
+    
     }
-
 }

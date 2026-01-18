@@ -1,17 +1,21 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-public class PlayerVfxPoints : MonoBehaviour
+
+namespace MinerGameMode
 {
-    [SerializeField] private Transform spawnPointA;
-    [SerializeField] private Transform spawnPointB;
-
-    public Transform SpawnPointA
+    public class PlayerVfxPoints : MonoBehaviour
     {
-        get { return spawnPointA; }
-    }
-
-    public Transform SpawnPointB
-    {
-        get { return spawnPointB; }
+        [SerializeField] private Transform spawnPointA;
+        [SerializeField] private Transform spawnPointB;
+    
+        public Transform SpawnPointA
+        {
+            get { return spawnPointA; }
+        }
+    
+        public Transform SpawnPointB
+        {
+            get { return spawnPointB; }
+        }
     }
 }
