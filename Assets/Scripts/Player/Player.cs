@@ -252,7 +252,7 @@ public class Player : MonoBehaviour
             return;
         }
         //CHECK IF MAIN LETTER
-        bool shouldCollectAsMain = GameManager.instance.TryGetLetter(letter.letterID);
+        bool shouldCollectAsMain = MinerMode.instance.TryGetLetter(letter.letterID);
 
         if (shouldCollectAsMain == true)
         {

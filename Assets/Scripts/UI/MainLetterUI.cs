@@ -12,22 +12,22 @@ public class MainLetterUI : MonoBehaviour
 
     private void OnEnable()
     {
-        GameManager.OnLevelStarted += HandleLevelStarted;
-        GameManager.OnWordIndexChanged += PaintColor;
+        MinerMode.OnLevelStarted += HandleLevelStarted;
+        MinerMode.OnWordIndexChanged += PaintColor;
 
-        if (GameManager.instance != null)
+        if (MinerMode.instance != null)
         {
-            if (GameManager.instance.level != null)
+            if (MinerMode.instance.level != null)
             {
-                HandleLevelStarted(GameManager.instance.level);
+                HandleLevelStarted(MinerMode.instance.level);
             }
         }
     }
 
     private void OnDisable()
     {
-        GameManager.OnLevelStarted -= HandleLevelStarted;
-        GameManager.OnWordIndexChanged -= PaintColor;
+        MinerMode.OnLevelStarted -= HandleLevelStarted;
+        MinerMode.OnWordIndexChanged -= PaintColor;
     }
 
     private void HandleLevelStarted(LevelDataSO level)

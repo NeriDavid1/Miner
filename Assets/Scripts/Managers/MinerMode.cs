@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using System.Threading.Tasks;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class MinerMode : MonoBehaviour, IGameMode
 {
     public LevelDataBase LevelDataBase;
     public LevelDataSO level;
@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
     public static event Action<LevelDataSO> OnLevelStarted; // UI + SPAWN MANAGER
     public static event Action<int> OnWordIndexChanged; // UI
 
-    public static GameManager instance;
+    public static MinerMode instance;
 
     public static event Action<string> OnLevelCompleted; // END STAGE UI
 
@@ -24,12 +24,12 @@ public class GameManager : MonoBehaviour
     {
         Player.OnMainLetterDelivered += MainLetterDelivered;
         Player.OnWrongLetterHit += CheckLettersInLevel;
+        
     }
 
     private void OnDisable()
     {
-        Player.OnMainLetterDelivered -= MainLetterDelivered;
-        Player.OnWrongLetterHit -= CheckLettersInLevel;
+        Cleanup();
     }
     private void Awake()
     {
@@ -39,37 +39,58 @@ public class GameManager : MonoBehaviour
             return;
         }
         instance = this;
+        Initialize();
     }
 
-    void Start()
+    async void Start()
     {        
-        StartGame();
+        await LoadLevel(currentLevel);
+        OnGameStart();
     }
 
-    public void StartGame()
+    #region IGameMode Implementation
+
+    public void Initialize()
     {
+        // Initialization logic if needed
+    }
+
+    public async Task LoadLevel(int levelIndex)
+    {
+        currentLevel = levelIndex;
         level = LevelDataBase.GetLevel(currentLevel);
         letterCounter = 0;
         wordIndex = 0;
 
-        OnWordIndexChanged?.Invoke(wordIndex);
-
         SetExpectedLetter();
-
-        OnLevelStarted?.Invoke(level);
-
         SpawnManager.instance.CreateLevel(level);
+        
+        // Ensure async context
+        await Task.Yield();
     }
 
-    //public void StartNextLevel()
-    //{
-    //    currentLevel++;
-    //    if (currentLevel >= LevelDataBase.dataSO.Count)
-    //    {
-    //        return;
-    //    }
-    //    StartGame();
-    //}
+    public void OnGameStart()
+    {
+        OnWordIndexChanged?.Invoke(wordIndex);
+        OnLevelStarted?.Invoke(level);
+    }
+
+    public void OnGameEnd(bool success)
+    {
+        if (success && level != null)
+        {
+             OnLevelCompleted?.Invoke(level.endStageText);
+             Debug.Log("STAGE DONE");
+        }
+    }
+
+    public void Cleanup()
+    {
+        Player.OnMainLetterDelivered -= MainLetterDelivered;
+        Player.OnWrongLetterHit -= CheckLettersInLevel;
+    }
+
+    #endregion
 
     private bool IsWordMode()
     {
@@ -129,9 +150,8 @@ public class GameManager : MonoBehaviour
             //Next Level if
             if (ExpectedLetter == null)
             {
-                OnLevelCompleted?.Invoke(level.endStageText); // TO LevelCompleteUI
+                OnGameEnd(true);
                 Debug.Log("WORD DONE - STAGE DONE");
-              //  StartNextLevel();
             }
             return;
         }
@@ -151,9 +171,7 @@ public class GameManager : MonoBehaviour
 
         if (letterCounter >= level.mainLetterCount)
         {
-            OnLevelCompleted?.Invoke(level.endStageText); // TO LevelCompleteUI
-            Debug.Log("STAGE DONE");
-          //  StartNextLevel();
+            OnGameEnd(true);
         }
     }
 
@@ -193,10 +211,16 @@ public class GameManager : MonoBehaviour
             if (!foundThisChar)
             {
                 Debug.LogError("GAME OVER: Missing letter " + charToFind);
-                StartGame();
+                ReplayLevel();
                 return;
             }
         }
+    }
+
+    private async void ReplayLevel()
+    {
+        await LoadLevel(currentLevel);
+        OnGameStart();
     }
 
     public bool TryGetLetter(string letterID)

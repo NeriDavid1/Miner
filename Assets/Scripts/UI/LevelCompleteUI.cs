@@ -15,13 +15,13 @@ public class LevelCompleteUI : MonoBehaviour
 
     private void OnEnable()
     {
-        GameManager.OnLevelCompleted += HandleLevelCompleted;
+        MinerMode.OnLevelCompleted += HandleLevelCompleted;
         endLevelPanel.SetActive(false);
     }
 
     private void OnDisable()
     {
-        GameManager.OnLevelCompleted -= HandleLevelCompleted;
+        MinerMode.OnLevelCompleted -= HandleLevelCompleted;
     }
 
     private void HandleLevelCompleted(string message)
@@ -32,15 +32,15 @@ public class LevelCompleteUI : MonoBehaviour
 
     private ParticleSystem GetEndStageVfxPrefab()
     {
-        if (GameManager.instance == null)
+        if (MinerMode.instance == null)
         {
             return null; 
         }
-        if (GameManager.instance.level == null) 
+        if (MinerMode.instance.level == null) 
         {
             return null; 
         }
-        return GameManager.instance.level.endStageVfxPrefab;
+        return MinerMode.instance.level.endStageVfxPrefab;
     }
 
 
